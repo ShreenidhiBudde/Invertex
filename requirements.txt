@@ -1,0 +1,8 @@
+nltk
+fastapi
+uvicorn
+pytest
+numpy
+tqdm
+beautifulsoup4
+requests
