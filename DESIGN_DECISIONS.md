@@ -32,3 +32,19 @@ Started: 2026-07-10
 - Build time: 264.0s for 300,000 docs.
 - Unique terms: 436,213.
 - On-disk index size: 339.8 MB.
+
+## TF-IDF Ranking Baseline (Phase 3)
+
+- Formula: tf(t,d) * idf(t), where idf(t) = log(N / df(t)).
+- search_tfidf lives in search_engine/ranking/tfidf.py.
+- Scoring aggregation: for each query term, its postings list is scanned once
+  and scores accumulated into a doc_id -> score dict, then sorted descending
+  and truncated to top-k.
+- Performance fix: initial implementation called term_frequency() per
+  candidate doc per query term (linear scan of postings each time), causing
+  35-64s query latency. Rewrote search_tfidf to iterate each term's postings
+  list once and accumulate directly, dropping latency to 3-37ms with
+  identical rankings.
+- Manual sanity check on 5 queries: results topically reasonable overall,
+  with some noise on shorter/ambiguous queries (expected for a
+  vector-space/no-normalization baseline; BM25 in Phase 4 should improve this).
