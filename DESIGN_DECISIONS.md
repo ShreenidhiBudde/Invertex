@@ -48,3 +48,19 @@ Started: 2026-07-10
 - Manual sanity check on 5 queries: results topically reasonable overall,
   with some noise on shorter/ambiguous queries (expected for a
   vector-space/no-normalization baseline; BM25 in Phase 4 should improve this).
+
+## BM25 Ranking (Phase 4)
+
+- Standard BM25 formula: idf(t) * (tf * (k1+1)) / (tf + k1 * (1 - b + b * (doc_len / avg_doc_len))).
+- idf uses the smoothed variant: log((N - df + 0.5) / (df + 0.5) + 1), avoids
+  negative idf for very common terms.
+- Defaults: k1=1.5, b=0.75 (standard literature defaults).
+- search_bm25 lives in search_engine/ranking/bm25.py, same postings-iterate-once
+  pattern as search_tfidf to avoid the earlier latency bug.
+- Parameter experiment: ran k1/b in {(1.2, 0.75), (1.5, 0.75), (2.0, 0.5)} across
+  5 manual queries. Ranking order was largely stable across combinations;
+  score magnitudes and top-5 ordering shifted slightly (e.g. tf-heavy docs rank
+  marginally higher with k1=2.0). No combination broke relevance.
+- Qualitative note: BM25 results are noticeably more topically precise than the
+  Phase 3 TF-IDF baseline on the same 5 queries — will be quantified properly
+  in Phase 7 eval.
