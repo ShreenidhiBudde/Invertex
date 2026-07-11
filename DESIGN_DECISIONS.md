@@ -13,7 +13,6 @@ Started: 2026-07-10
 - Question-only vs. question+answer: index questions only for v1; answers deferred.
 
 ## Full Corpus Build (Phase 0b)
-
 - Subsampled 300,000 questions (random, seed=42) from full dataset of 1,264,216.
 - Full pipeline (HTML/code strip via BeautifulSoup) ran in 171.7s for 300k records.
 - Corpus stats (pre-stemming, whitespace tokenization):
@@ -22,3 +21,14 @@ Started: 2026-07-10
 - Known issue: some docs have 0 tokens after code-stripping (code-only bodies with
   no prose). Decision on drop-vs-keep deferred to Phase 1 tokenization review.
 - Tags not yet joined (Tags.csv unused in loader v1) — tags: [] stub in all records.
+
+## Inverted Index (Phase 2)
+
+- In-memory build: single-pass streaming over corpus.jsonl, tokenizing via
+  Phase 1 tokenizer, populating term -> list[Posting] with term_frequency
+  and positions per doc.
+- Serialization: pickle for v1 (stated as intentional starting point in
+  project spec; may upgrade to custom binary format later if time allows).
+- Build time: 264.0s for 300,000 docs.
+- Unique terms: 436,213.
+- On-disk index size: 339.8 MB.
