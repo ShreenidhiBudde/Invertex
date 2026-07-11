@@ -1,4 +1,4 @@
-# Invertex - From-Scratch Full-Text Search Engine
+# Invertex -> from Scratch full-text Search Engine
 
 A production-style search engine built entirely from first principles — no Elasticsearch, no Whoosh, no Lucene. Every core piece of the retrieval stack (inverted index, TF-IDF, BM25 ranking, boolean/phrase/fuzzy query parsing) is hand-written in Python, benchmarked against a naive baseline, and served through a real API and UI.
 
