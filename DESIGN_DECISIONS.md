@@ -11,3 +11,14 @@ Started: 2026-07-10
   of "accepted answer."
 - Code-block handling for v1: strip code from indexed text (index title + prose body only).
 - Question-only vs. question+answer: index questions only for v1; answers deferred.
+
+## Full Corpus Build (Phase 0b)
+
+- Subsampled 300,000 questions (random, seed=42) from full dataset of 1,264,216.
+- Full pipeline (HTML/code strip via BeautifulSoup) ran in 171.7s for 300k records.
+- Corpus stats (pre-stemming, whitespace tokenization):
+  - Vocab size: 765,461
+  - Doc length (tokens): min 0, median 74, mean 90.9, max 1857
+- Known issue: some docs have 0 tokens after code-stripping (code-only bodies with
+  no prose). Decision on drop-vs-keep deferred to Phase 1 tokenization review.
+- Tags not yet joined (Tags.csv unused in loader v1) — tags: [] stub in all records.
