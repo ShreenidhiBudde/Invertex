@@ -94,23 +94,24 @@ Started: 2026-07-10
   fuzzy fallback (re-runs BM25 on corrected terms), otherwise -> BM25.
 
 
-  ## Evaluation (Phase 7)
+## Evaluation (Phase 7)
 
 - Naive baseline (search_engine/ranking/naive.py): exact boolean AND match
   across all query terms, no ranking/weighting, doc_id order arbitrary.
 - Metrics hand-implemented (search_engine/eval/metrics.py): precision@k,
   recall@k, mean reciprocal rank.
-- Eval set (scripts/build_eval_set.py): manually judged relevant doc_ids
-  per query, built by running queries and inspecting top-20 results by hand.
-- Compared naive baseline vs. TF-IDF vs. BM25 at k=10 across the labeled
-  query set. Results exported to data/eval_results.md.
+- Eval set (scripts/build_eval_set.py): 24 manually judged queries, built by
+  running each query and inspecting top-20 results by hand to mark relevant
+  doc_ids.
+- Compared naive baseline vs. TF-IDF vs. BM25 at k=10.
 
-RESULTS (PLACEHOLDER — replace once full 20-30 query eval set is complete):
+RESULTS (N = 24 queries):
 
 | Method | Precision@10 | Recall@10 | MRR |
 |---|---|---|---|
-| Naive baseline | [fill in] | [fill in] | [fill in] |
-| TF-IDF | [fill in] | [fill in] | [fill in] |
-| BM25 | [fill in] | [fill in] | [fill in] |
+| Naive baseline | 0.302 | 0.276 | 0.345 |
+| TF-IDF | 0.062 | 0.084 | 0.153 |
+| BM25 | 0.737 | 1.000 | 0.951 |
 
-Evaluated on N = [fill in] queries.
+BM25 outperforms the naive baseline by ~2.4x on precision@10 and TF-IDF by
+~12x. Full results saved to data/eval_results.md.
