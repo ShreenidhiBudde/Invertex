@@ -64,3 +64,31 @@ Started: 2026-07-10
 - Qualitative note: BM25 results are noticeably more topically precise than the
   Phase 3 TF-IDF baseline on the same 5 queries — will be quantified properly
   in Phase 7 eval.
+
+  ## Query Features: Boolean, Phrase, Fuzzy (Phase 5)
+
+- Boolean AND/OR: hand-written sorted-postings merge (intersect_postings /
+  union_postings), O(len(a)+len(b)) per merge. Query parser is left-to-right,
+  no operator precedence or parentheses support (v1 scope).
+- Phrase queries: use stored term positions from Phase 2; for each candidate
+  doc (intersection of docs containing all phrase terms), checks for a
+  consecutive-position match starting from each occurrence of the first term.
+- Fuzzy matching: hand-written Levenshtein DP for edit distance. Candidate
+  ranking evolved during testing:
+  - v1 (distance only) picked semantically poor matches when multiple
+    vocabulary terms tied on distance.
+  - v2 (distance + length-diff tiebreak) still failed: since the index
+    vocabulary is stemmed, misspelled query terms often sit closer (by raw
+    edit distance) to other rare misspellings already in the vocab than to
+    the common correct stem.
+  - Final: candidates within max_distance are ranked by document frequency
+    (descending), with edit distance as a secondary tiebreak. Common/correct
+    terms reliably beat rare one-off typos already present in the corpus.
+  - max_distance=3 used in the dispatcher's fuzzy fallback (vs. 2 elsewhere)
+    to account for stemmed-vocab mismatches between typo and correct term.
+  - Known limitation: full-vocabulary scan per fuzzy lookup (~436k terms)
+    costs ~9-10s per query. Acceptable for v1/manual testing; would need a
+    prefix index or BK-tree to be production-viable.
+- Unified dispatcher (search_engine/query/search.py): quoted string -> phrase,
+  " AND "/" OR " present -> boolean, all query terms unmatched in vocab ->
+  fuzzy fallback (re-runs BM25 on corrected terms), otherwise -> BM25.
